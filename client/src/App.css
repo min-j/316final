@@ -69,6 +69,14 @@ body {
   vertical-align: center;
 }
 
+#welcome-screen {
+  background-image: linear-gradient(rgb(168, 168, 255), rgb(255, 244, 173));
+  color: white;
+  padding-top: 5%;
+  height:70%;
+  padding-bottom: 5%;
+}
+
 #edit-toolbar {
   background-color: transparent;
   float: right;
