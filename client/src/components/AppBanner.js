@@ -36,7 +36,7 @@ export default function AppBanner() {
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'right',
             }}
             id={menuId}
@@ -56,7 +56,7 @@ export default function AppBanner() {
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'right',
             }}
             id={menuId}
