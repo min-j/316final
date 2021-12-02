@@ -93,7 +93,7 @@ export default function Navigation() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="transparent" elevation='0'>
+      <AppBar position="static" color="transparent" elevation={0}>
         <Toolbar>
           <IconButton
             size="large"

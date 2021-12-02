@@ -103,7 +103,7 @@ getTop5ListById = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5Lists = async (req, res) => {
-    await Top5List.find({ ownerEmail: req.email }, (err, top5Lists) => {
+    await Top5List.find({ }, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }

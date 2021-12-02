@@ -12,6 +12,7 @@ import WorkspaceScreen from './WorkspaceScreen'
 import ErrorModal from './ErrorModal'
 import DeleteModal from './DeleteModal'
 import Navigation from './Navigation'
+import AccordionListCard from './AccordionListCard'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -32,4 +33,5 @@ export {
     Statusbar, 
     Top5Item, 
     WorkspaceScreen,
-    Navigation }
+    Navigation,
+    AccordionListCard }
