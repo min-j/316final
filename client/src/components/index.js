@@ -9,6 +9,7 @@ import SplashScreen from './SplashScreen'
 import Statusbar from './Statusbar'
 import Top5Item from './Top5Item'
 import WorkspaceScreen from './WorkspaceScreen'
+import Workspace from './Workspace'
 import ErrorModal from './ErrorModal'
 import DeleteModal from './DeleteModal'
 import Navigation from './Navigation'
@@ -33,5 +34,6 @@ export {
     Statusbar, 
     Top5Item, 
     WorkspaceScreen,
+    Workspace,
     Navigation,
     AccordionListCard }

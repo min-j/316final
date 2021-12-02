@@ -9,7 +9,7 @@ import {
     RegisterScreen,
     SignInScreen,
     Statusbar,
-    WorkspaceScreen
+    Workspace
 } from './components'
 /*
     This is our application's top-level component.
@@ -32,7 +32,7 @@ const App = () => {
                         <Route path="/" exact component={HomeWrapper} />
                         <Route path="/register/" exact component={RegisterScreen} />
                         <Route path="/login/" exact component={SignInScreen} />
-                        <Route path="/top5list/:id" exact component={WorkspaceScreen} />
+                        <Route path="/top5list/:id" exact component={Workspace} />
                     </Switch>
                     <Statusbar />
                 </GlobalStoreContextProvider>

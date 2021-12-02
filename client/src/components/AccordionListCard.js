@@ -17,9 +17,16 @@ import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import TextField from '@mui/material/TextField';
 
-export default function SimpleAccordion(props) {
+export default function AccordtionListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const { top5list } = props;
+
+    function handleEditList(event, id) {
+        if (!event.target.disabled) {
+            // CHANGE THE CURRENT LIST
+            store.setCurrentList(id);
+        }
+    }
 
     async function handleDeleteList(event, id) {
         event.stopPropagation();
@@ -49,7 +56,7 @@ export default function SimpleAccordion(props) {
                     <Grid item xs={1}>
                         <IconButton 
                             aria-label="edit"
-                            onClick={(event) => {event.stopPropagation()}}
+                            onClick={(event) => {handleEditList(event, top5list._id)}}
                         >
                             <EditOutlinedIcon />
                         </IconButton>
@@ -117,9 +124,9 @@ export default function SimpleAccordion(props) {
                                 height: '80%',
                             }}
                         >
-                            <Box>COMMENT 1</Box>
-                            <Box>COMMENT 1</Box>
-                            <Box>COMMENT 1</Box>
+                            <Box>COMMENTS</Box>
+                            <Box>SHOULD BE</Box>
+                            <Box>A COMPONENT</Box>
                         </Box>
                         <TextField 
                             id="outlined-basic" 

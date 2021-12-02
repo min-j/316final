@@ -15,13 +15,9 @@ function Statusbar() {
     function handleCreateNewList() {
         store.createNewList();
     }
-
-    if (store.currentList)
-        text = store.currentList.name;
-    return (
+    let statusbar = 
         <div id="top5-statusbar">
-            {/* <Typography variant="h4">{text}</Typography> */}
-            {/* <div id="list-selector-heading"> */}
+        {/* <Typography variant="h4">{text}</Typography> */}
             <Fab 
                 aria-label="add"
                 id="add-list-button"
@@ -30,9 +26,14 @@ function Statusbar() {
             >
                 <AddIcon />
             </Fab>
-                <Typography variant="h3">Your Lists</Typography>
-            {/* </div> */}
+            <Typography variant="h3">Your Lists</Typography>
         </div>
+    // might have to be auth to check if a user is logged in instead
+    if (store.currentList)
+        // text = store.currentList.name;
+        statusbar = <div id="top5-statusbar"></div>
+    return (
+        statusbar
     );
 }
 
