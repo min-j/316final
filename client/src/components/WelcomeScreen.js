@@ -1,10 +1,19 @@
+import { useContext } from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { Button, List, ListItem, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Copyright from './Copyright'
+import AuthContext from '../auth'
 
 export default function WelcomeScreen() {
+    const { auth } = useContext(AuthContext);
+
+    const handleGuest = (event) => {
+        event.preventDefault();
+        auth.guestUser();
+    }
+
     return (
         <div id="welcome-screen">
             <Box
@@ -41,7 +50,8 @@ export default function WelcomeScreen() {
                     <ListItem>
                         <Button 
                         fullWidth
-                        variant="contained">
+                        variant="contained"
+                        onClick={(event) => handleGuest(event)}>
                             Continue as Guest
                         </Button>
                     </ListItem>

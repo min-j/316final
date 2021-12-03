@@ -1,3 +1,4 @@
+import { fabClasses } from "@mui/material";
 import React, { createContext, useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import api from '../api'
@@ -11,6 +12,7 @@ export const AuthActionType = {
     REGISTER_USER: "REGISTER_USER",
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
+    GUEST: "GUEST",
     SHOW_ERROR_MODAL: "SHOW_ERROR_MODAL",
     HIDE_ERROR_MODAL: "HIDE_ERROR_MODAL"
 }
@@ -18,6 +20,7 @@ export const AuthActionType = {
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
+        guest: false,
         loggedIn: false,
         showModal: false
     });
@@ -33,6 +36,7 @@ function AuthContextProvider(props) {
             case AuthActionType.GET_LOGGED_IN: {
                 return setAuth({
                     user: payload.user,
+                    guest: false,
                     loggedIn: payload.loggedIn,
                     showModal: false
                 });
@@ -40,6 +44,7 @@ function AuthContextProvider(props) {
             case AuthActionType.REGISTER_USER: {
                 return setAuth({
                     user: payload.user,
+                    guest: false,
                     loggedIn: true,
                     showModal: false
                 });
@@ -47,6 +52,7 @@ function AuthContextProvider(props) {
             case AuthActionType.LOGIN: {
                 return setAuth({
                     user: payload.user,
+                    guest: false,
                     loggedIn: true,
                     showModal: false
                 });
@@ -54,6 +60,15 @@ function AuthContextProvider(props) {
             case AuthActionType.LOGOUT: {
                 return setAuth({
                     user: null,
+                    guest: false,
+                    loggedIn: false,
+                    showModal: false
+                })
+            }
+            case AuthActionType.GUEST: {
+                return setAuth({
+                    user: null,
+                    guest: true,
                     loggedIn: false,
                     showModal: false
                 })
@@ -61,6 +76,7 @@ function AuthContextProvider(props) {
             case AuthActionType.SHOW_ERROR_MODAL: {
                 return setAuth({
                     user: payload,
+                    guest: false,
                     loggedIn: false,
                     showModal: true
                 });
@@ -68,6 +84,7 @@ function AuthContextProvider(props) {
             case AuthActionType.HIDE_ERROR_MODAL: {
                 return setAuth({
                     user: null,
+                    guest: false,
                     loggedIn: false,
                     showModal: false
                 });
@@ -154,6 +171,13 @@ function AuthContextProvider(props) {
             });
             history.push("/");
         }
+    }
+
+    auth.guestUser = function() {
+        authReducer ({
+            type: AuthActionType.GUEST
+        })
+        history.push("/");
     }
 
     auth.hideModal = function () {

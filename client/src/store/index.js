@@ -51,6 +51,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     allLists: store.allLists,
+                    currentList: payload,
                     newListCounter: store.newListCounter + 1,
                     listMarkedForDeletion: null
                 })
@@ -60,6 +61,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     idNamePairs: payload,
                     allLists: store.allLists,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: null
                 });
@@ -69,6 +71,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     allLists: payload,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: null
                 });
@@ -78,6 +81,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     allLists: store.allLists,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: payload
                 });
@@ -87,6 +91,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     allLists: store.allLists,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: null
                 });
