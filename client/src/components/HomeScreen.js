@@ -13,9 +13,9 @@ import { DeleteModal } from '.';
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
 
-    // useEffect(() => {
-    //     store.loadHomeLists();
-    // }, []);
+    useEffect(() => {
+        store.loadHomeLists();
+    }, []);
 
     let listCard = "";
     if (store) {

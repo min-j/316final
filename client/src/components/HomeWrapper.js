@@ -3,7 +3,6 @@ import HomeScreen from './HomeScreen'
 import AuthContext from '../auth'
 import WelcomeScreen from './WelcomeScreen';
 import Navigation from './Navigation';
-import GlobalStoreContext from '../store'
 
 export default function HomeWrapper() {
     const { auth } = useContext(AuthContext);

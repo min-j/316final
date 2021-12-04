@@ -147,7 +147,12 @@ export default function Navigation() {
     //   }
     // }
   }
-  console.log(auth.guest)
+  
+  let buttondisabled = false
+  if (store.currentList) {
+    buttondisabled = true
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="transparent" elevation={0}>
@@ -158,7 +163,7 @@ export default function Navigation() {
             color="inherit"
             aria-label="home"
             id="home-button"
-            disabled={auth.guest}
+            disabled={store.currentList || auth.guest}
             onClick={(event) => handleHomeButton(event)}
           >
             <HomeOutlinedIcon />
@@ -168,6 +173,7 @@ export default function Navigation() {
             color="inherit"
             aria-label="all lists"
             id="all-button"
+            disabled={buttondisabled}
             onClick={(event) => handleAllButton(event)}
           >
             <GroupsOutlinedIcon />
@@ -177,6 +183,7 @@ export default function Navigation() {
             color="inherit"
             aria-label="users"
             id="users-button"
+            disabled={buttondisabled}
             onClick={(event) => handleUserButton(event)}
           >
             <PersonOutlinedIcon />
@@ -186,6 +193,7 @@ export default function Navigation() {
             color="inherit"
             aria-label="community lists"
             id="community-button"
+            disabled={buttondisabled}
             onClick={(event) => handleCommunityButton(event)}
           >
             <FunctionsOutlinedIcon />
@@ -199,6 +207,7 @@ export default function Navigation() {
               inputProps={{ 'aria-label': 'search' }}
               id="search"
               onInput={handleSearch}
+              disabled={buttondisabled}
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />
@@ -211,6 +220,7 @@ export default function Navigation() {
               aria-haspopup="true"
               onClick={handleSortMenuOpen}
               color="inherit"
+              disabled={buttondisabled}
             >
                 <SortIcon />
             </IconButton>

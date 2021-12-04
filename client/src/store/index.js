@@ -424,6 +424,23 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    store.editCurrentList = function(data) {
+        store.currentList.name = data.name
+        store.currentList.items = data.list
+        store.updateCurrentList();
+    }
+
+    store.updateCurrentList = async function () {
+        const response = await api.updateTop5ListById(store.currentList._id, store.currentList);
+        if (response.status === 200) {
+            storeReducer({
+                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                payload: store.currentList
+            });
+        }
+        history.push('/')
+    }
+
     store.closeCurrentList = function () {
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,

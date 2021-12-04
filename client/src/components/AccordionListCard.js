@@ -16,8 +16,10 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import TextField from '@mui/material/TextField';
+import AuthContext from '../auth'
 
-export default function AccordtionListCard(props) {
+export default function AccordionListCard(props) {
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const { top5list } = props;
 
@@ -33,6 +35,12 @@ export default function AccordtionListCard(props) {
         store.markListForDeletion(id);
     }
 
+    let editvisible = 'visible'
+    if (auth.user !== null) {
+        if (auth.user.userName !== top5list.userName) {
+            editvisible = 'hidden'
+        }
+    }
     return (
         <ListItem 
             id={top5list._id}
@@ -52,10 +60,11 @@ export default function AccordtionListCard(props) {
                         <Typography sx={ {fontSize:30} }>
                             {top5list.name}
                         </Typography>
-                    </Grid>
+                    </Grid> 
                     <Grid item xs={1}>
                         <IconButton 
                             aria-label="edit"
+                            sx = { {visibility: editvisible} }
                             onClick={(event) => {handleEditList(event, top5list._id)}}
                         >
                             <EditOutlinedIcon />
@@ -78,9 +87,9 @@ export default function AccordtionListCard(props) {
                         </IconButton>
                     </Grid>
                     <Grid item xs={1}>
-                        <IconButton onClick={(event) => {
-                            handleDeleteList(event, top5list._id)
-                            }} 
+                        <IconButton 
+                            onClick={(event) => {handleDeleteList(event, top5list._id)}}
+                            sx = { {visibility: editvisible} } 
                             aria-label='delete'>
                             <DeleteOutlinedIcon />
                         </IconButton>
