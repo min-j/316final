@@ -5,13 +5,15 @@ import { Button, List, ListItem, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Copyright from './Copyright'
 import AuthContext from '../auth'
+import GlobalStoreContext from '../store'
 
 export default function WelcomeScreen() {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
 
     const handleGuest = (event) => {
         event.preventDefault();
-        auth.guestUser();
+        auth.guestUser(store);
     }
 
     return (

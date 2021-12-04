@@ -159,10 +159,12 @@ function AuthContextProvider(props) {
             // console.log(e.response.data.errorMessage);
             // let message = e.response.data.errorMessage
             // console.log(message)
-            authReducer({
-                type: AuthActionType.SHOW_ERROR_MODAL,
-                payload: e.response.data.errorMessage
-            })
+            if (e.response) {
+                authReducer({
+                    type: AuthActionType.SHOW_ERROR_MODAL,
+                    payload: e.response.data.errorMessage
+                })
+            }   
         }
     }
     auth.logoutUser = async function() {
@@ -175,11 +177,12 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.guestUser = function() {
+    auth.guestUser = function(store) {
         authReducer ({
             type: AuthActionType.GUEST
         })
         history.push("/");
+        store.loadCommunityLists()
     }
 
     auth.hideModal = function () {

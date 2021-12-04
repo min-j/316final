@@ -13,7 +13,8 @@ import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import FunctionsOutlinedIcon from '@mui/icons-material/FunctionsOutlined';
 import SortIcon from '@mui/icons-material/Sort';
-import { GlobalStoreContext } from '../store'
+import GlobalStoreContext from '../store'
+import AuthContext from '../auth'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -57,6 +58,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navigation() {
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -92,31 +94,6 @@ export default function Navigation() {
       <MenuItem onClick={handleMenuClose}>Dislikes</MenuItem>
     </Menu>
   );
-
-  if (store.showHome) { 
-    document.getElementById("home-button").style.border = '1px solid black';
-    document.getElementById("all-button").style.border = '';
-    document.getElementById("users-button").style.border = '';
-    document.getElementById("community-button").style.border = '';
-  }
-  if (store.showAll) { 
-    document.getElementById("home-button").style.border = '';
-    document.getElementById("all-button").style.border = '1px solid black';
-    document.getElementById("users-button").style.border = '';
-    document.getElementById("community-button").style.border = '';
-  }
-  if (store.showUsers) { 
-    document.getElementById("home-button").style.border = '';
-    document.getElementById("all-button").style.border = '';
-    document.getElementById("users-button").style.border = '1px solid black';
-    document.getElementById("community-button").style.border = '';
-  }
-  if (store.showCommunity) { 
-    document.getElementById("home-button").style.border = '';
-    document.getElementById("all-button").style.border = '';
-    document.getElementById("users-button").style.border = '';
-    document.getElementById("community-button").style.border = '1px solid black';
-  }
 
   const handleHomeButton = () => {
     store.loadHomeLists()
@@ -170,7 +147,7 @@ export default function Navigation() {
     //   }
     // }
   }
-
+  console.log(auth.guest)
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="transparent" elevation={0}>
@@ -181,6 +158,7 @@ export default function Navigation() {
             color="inherit"
             aria-label="home"
             id="home-button"
+            disabled={auth.guest}
             onClick={(event) => handleHomeButton(event)}
           >
             <HomeOutlinedIcon />

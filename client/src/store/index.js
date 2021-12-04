@@ -244,6 +244,10 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_HOME_LISTS,
                     payload: listArray
                 });
+                document.getElementById("home-button").style.border = '1px solid black';
+                document.getElementById("all-button").style.border = '';
+                document.getElementById("users-button").style.border = '';
+                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -269,6 +273,10 @@ function GlobalStoreContextProvider(props) {
                         search: query
                     }
                 });
+                document.getElementById("home-button").style.border = '';
+                document.getElementById("all-button").style.border = '1px solid black';
+                document.getElementById("users-button").style.border = '';
+                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -298,6 +306,10 @@ function GlobalStoreContextProvider(props) {
                         search: query
                     }
                 });
+                document.getElementById("home-button").style.border = '';
+                document.getElementById("all-button").style.border = '';
+                document.getElementById("users-button").style.border = '1px solid black';
+                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -323,6 +335,10 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
                     payload: []
                 });
+                document.getElementById("home-button").style.border = '';
+                document.getElementById("all-button").style.border = '';
+                document.getElementById("users-button").style.border = '';
+                document.getElementById("community-button").style.border = '1px solid black';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
