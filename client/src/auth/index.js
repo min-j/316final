@@ -132,11 +132,13 @@ function AuthContextProvider(props) {
                 store.loadHomeLists();
             }
         } catch (e) {
-            console.log(e.response.data.errorMessage);
-            authReducer({
-                type: AuthActionType.SHOW_ERROR_MODAL,
-                payload: e.response.data.errorMessage
-            });
+            if (e) {
+                console.log(e.response.data.errorMessage);
+                authReducer({
+                    type: AuthActionType.SHOW_ERROR_MODAL,
+                    payload: e.response.data.errorMessage
+                });
+            }
         }
     }
     

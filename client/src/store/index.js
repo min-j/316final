@@ -17,7 +17,6 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
-    
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     UNMARK_LIST_FOR_DELETION: "UNMARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
@@ -204,7 +203,8 @@ function GlobalStoreContextProvider(props) {
         let payload = {
             name: newListName,
             items: ["?", "?", "?", "?", "?"],
-            ownerEmail: auth.user.email
+            ownerEmail: auth.user.email,
+            userName: auth.user.userName
         };
         const response = await api.createTop5List(payload);
         if (response.data.success) {
@@ -226,7 +226,7 @@ function GlobalStoreContextProvider(props) {
     store.loadHomeLists = async function (query) {
         try {
             const response = await api.getAllTop5Lists( 
-                {params: {ownerEmail: auth.user.email, name: query}});
+                {params: {userName: auth.user.userName, name: query}});
             if (response.data.success) {
                 let listArray = response.data.data
                 storeReducer({
@@ -240,6 +240,10 @@ function GlobalStoreContextProvider(props) {
         }
         catch (e) {
             console.log("NO MATCHES FOUND")
+            storeReducer({
+                type: GlobalStoreActionType.LOAD_HOME_LISTS,
+                payload: []
+            });
         }
     }
     store.loadAllLists = async function (query) {

@@ -10,6 +10,7 @@ getLoggedIn = async (req, res) => {
             user: {
                 firstName: loggedInUser.firstName,
                 lastName: loggedInUser.lastName,
+                userName: loggedInUser.userName,
                 email: loggedInUser.email
             }
         }).send();
@@ -18,8 +19,8 @@ getLoggedIn = async (req, res) => {
 
 registerUser = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, passwordVerify } = req.body;
-        if (!firstName || !lastName || !email || !password || !passwordVerify) {
+        const { firstName, lastName, userName, email, password, passwordVerify } = req.body;
+        if (!firstName || !lastName || !userName || !email || !password || !passwordVerify) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
@@ -47,13 +48,22 @@ registerUser = async (req, res) => {
                     errorMessage: "An account with this email address already exists."
                 })
         }
+        const existingUserName = await User.findOne({ userName: userName });
+        if (existingUserName) {
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    errorMessage: "That username is taken."
+                })
+        }
 
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newUser = new User({
-            firstName, lastName, email, passwordHash
+            firstName, lastName, userName, email, passwordHash
         });
         const savedUser = await newUser.save();
 
@@ -69,6 +79,7 @@ registerUser = async (req, res) => {
             user: {
                 firstName: savedUser.firstName,
                 lastName: savedUser.lastName,
+                userName: savedUser.userName,
                 email: savedUser.email
             }
         }).send();
@@ -108,6 +119,7 @@ loginUser = async (req,res) => {
             user: {
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,
+                userName: existingUser.userName,
                 email: existingUser.email
             }
         }).send();
