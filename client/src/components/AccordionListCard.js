@@ -41,6 +41,17 @@ export default function AccordionListCard(props) {
             editvisible = 'hidden'
         }
     }
+    if (auth.guest) {
+        editvisible = 'hidden'
+    }
+
+    let title = top5list.name;
+    let items = top5list.items;
+    if (store.showHome) {
+        title = top5list.savedName;
+        items = top5list.savedItems;
+    }
+
     return (
         <ListItem 
             id={top5list._id}
@@ -58,7 +69,7 @@ export default function AccordionListCard(props) {
                     <Grid item xs={8}>
                         {/* <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box> */}
                         <Typography sx={ {fontSize:30} }>
-                            {top5list.name}
+                            {title}
                         </Typography>
                     </Grid> 
                     <Grid item xs={1}>
@@ -108,19 +119,19 @@ export default function AccordionListCard(props) {
                     <Grid item xs={6}>
                         <Box sx={ {border: '1px black', bgcolor: 'background.paper'} }>
                             <Typography variant="h4">
-                                1. {top5list.items[0]}
+                                1. {items[0]}
                             </Typography>
                             <Typography variant="h4">
-                                2. {top5list.items[1]}
+                                2. {items[1]}
                             </Typography>
                             <Typography variant="h4">
-                                3. {top5list.items[2]}
+                                3. {items[2]}
                             </Typography>
                             <Typography variant="h4">
-                                4. {top5list.items[3]}
+                                4. {items[3]}
                             </Typography>
                             <Typography variant="h4">
-                                5. {top5list.items[4]}
+                                5. {items[4]}
                             </Typography>
                         </Box>
                     </Grid>

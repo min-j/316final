@@ -1,5 +1,5 @@
 import { Box } from '@mui/system';
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store/index.js'
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -9,6 +9,7 @@ import Navigation from './Navigation';
 
 export default function Workspace() {
     const { store } = useContext(GlobalStoreContext);
+    const [publishActive, setPublishActive] = useState(true);
 
     // console.log(store.currentList)
 
@@ -22,7 +23,37 @@ export default function Workspace() {
                     document.getElementById('item-3').value,
                     document.getElementById('item-4').value]
         }
-        store.editCurrentList(data)
+        store.publishedCurrentList(data)
+    }
+
+    const handleSave = (event) => {
+        let data = {
+            name: document.getElementById('item-name').value,
+            list: [document.getElementById('item-0').value,
+                    document.getElementById('item-1').value,
+                    document.getElementById('item-2').value,
+                    document.getElementById('item-3').value,
+                    document.getElementById('item-4').value]
+        }
+        store.saveList(data)
+    }
+
+    const handleChange = () => {
+        if (document.getElementById('item-name').value && document.getElementById('item-0').value && 
+            document.getElementById('item-1').value && document.getElementById('item-2').value && 
+            document.getElementById('item-3').value && document.getElementById('item-4').value) {
+            setPublishActive(false);
+        }
+        else {
+            setPublishActive(true);
+        }
+    }
+
+    let name = store.currentList.name
+    let items = store.currentList.items;
+    if (store.currentList.items !== store.currentList.savedItems) {
+        name = store.currentList.savedName;
+        items = store.currentList.savedItems;
     }
 
     return (
@@ -32,9 +63,10 @@ export default function Workspace() {
                 id="item-name" 
                 label="Top 5 List Name" 
                 variant="outlined" 
-                defaultValue={store.currentList.name}
+                defaultValue={name}
                 required
                 sx ={{m:3, marginLeft:10}}
+                onChange={handleChange}
             />
             <Box>
                 <Box sx={{width:'90%', margin: '0 auto'}} >
@@ -48,7 +80,8 @@ export default function Workspace() {
                                     label="Top 5 List Item"
                                     required
                                     fullWidth
-                                    defaultValue={store.currentList.items[0]}
+                                    defaultValue={items[0]}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -60,7 +93,8 @@ export default function Workspace() {
                                     label="Top 5 List Item"
                                     required
                                     fullWidth
-                                    defaultValue={store.currentList.items[1]}
+                                    defaultValue={items[1]}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -72,7 +106,8 @@ export default function Workspace() {
                                     label="Top 5 List Item"
                                     required
                                     fullWidth
-                                    defaultValue={store.currentList.items[2]}
+                                    defaultValue={items[2]}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -84,7 +119,8 @@ export default function Workspace() {
                                     label="Top 5 List Item"
                                     required
                                     fullWidth
-                                    defaultValue={store.currentList.items[3]}
+                                    defaultValue={items[3]}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -96,7 +132,8 @@ export default function Workspace() {
                                     label="Top 5 List Item"
                                     required
                                     fullWidth
-                                    defaultValue={store.currentList.items[4]}
+                                    defaultValue={items[4]}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                             <Grid item xs={8}></Grid>
@@ -105,15 +142,17 @@ export default function Workspace() {
                                     type="submit"
                                     fullWidth
                                     variant="contained"
+                                    onClick={(event) => {handleSave(event)}}
                                 >
                                     Save
                                 </Button>
                             </Grid>
                             <Grid item xs={2}>
-                            <Button
+                                <Button
                                     type="submit"
                                     fullWidth
                                     variant="contained"
+                                    disabled={publishActive}
                                     onClick={(event) => {handlePublish(event)}}
                                 >
                                     Publish

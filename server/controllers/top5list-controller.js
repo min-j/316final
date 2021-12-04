@@ -54,6 +54,8 @@ updateTop5List = async (req, res) => {
         // }
         top5List.name = body.name
         top5List.items = body.items
+        top5List.savedName = body.savedName
+        top5List.savedItems = body.savedItems
         top5List
             .save()
             .then(() => {

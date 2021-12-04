@@ -215,6 +215,8 @@ function GlobalStoreContextProvider(props) {
             name: newListName,
             items: ["?", "?", "?", "?", "?"],
             ownerEmail: auth.user.email,
+            savedName: newListName,
+            savedItems: ["?", "?", "?", "?", "?"],
             userName: auth.user.userName
         };
         const response = await api.createTop5List(payload);
@@ -235,6 +237,10 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.loadHomeLists = async function (query) {
+        document.getElementById("home-button").style.border = '1px solid black';
+        document.getElementById("all-button").style.border = '';
+        document.getElementById("users-button").style.border = '';
+        document.getElementById("community-button").style.border = '';
         try {
             const response = await api.getAllTop5Lists( 
                 {params: {userName: auth.user.userName, name: query}});
@@ -244,10 +250,6 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_HOME_LISTS,
                     payload: listArray
                 });
-                document.getElementById("home-button").style.border = '1px solid black';
-                document.getElementById("all-button").style.border = '';
-                document.getElementById("users-button").style.border = '';
-                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -262,6 +264,10 @@ function GlobalStoreContextProvider(props) {
         }
     }
     store.loadAllLists = async function (query) {
+        document.getElementById("home-button").style.border = '';
+        document.getElementById("all-button").style.border = '1px solid black';
+        document.getElementById("users-button").style.border = '';
+        document.getElementById("community-button").style.border = '';
         try {
             const response = await api.getAllTop5Lists({params: {name: query}});
             if (response.data.success) {
@@ -273,10 +279,6 @@ function GlobalStoreContextProvider(props) {
                         search: query
                     }
                 });
-                document.getElementById("home-button").style.border = '';
-                document.getElementById("all-button").style.border = '1px solid black';
-                document.getElementById("users-button").style.border = '';
-                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -295,6 +297,10 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.loadUserLists = async function(query) {
+        document.getElementById("home-button").style.border = '';
+        document.getElementById("all-button").style.border = '';
+        document.getElementById("users-button").style.border = '1px solid black';
+        document.getElementById("community-button").style.border = '';
         try {
             const response = await api.getAllTop5Lists({params: {userName: query} });
             if (response.data.success) {
@@ -306,10 +312,6 @@ function GlobalStoreContextProvider(props) {
                         search: query
                     }
                 });
-                document.getElementById("home-button").style.border = '';
-                document.getElementById("all-button").style.border = '';
-                document.getElementById("users-button").style.border = '1px solid black';
-                document.getElementById("community-button").style.border = '';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -327,6 +329,10 @@ function GlobalStoreContextProvider(props) {
         }
     }
     store.loadCommunityLists = async function(query) {
+        document.getElementById("home-button").style.border = '';
+        document.getElementById("all-button").style.border = '';
+        document.getElementById("users-button").style.border = '';
+        document.getElementById("community-button").style.border = '1px solid black';
         try {
             const response = await api.getAllTop5Lists({params: {name: query}});
             if (response.data.success) {
@@ -335,10 +341,6 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
                     payload: []
                 });
-                document.getElementById("home-button").style.border = '';
-                document.getElementById("all-button").style.border = '';
-                document.getElementById("users-button").style.border = '';
-                document.getElementById("community-button").style.border = '1px solid black';
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -424,9 +426,18 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.editCurrentList = function(data) {
-        store.currentList.name = data.name
-        store.currentList.items = data.list
+    
+    store.saveList = function(data) {
+        store.currentList.savedName = data.name;
+        store.currentList.savedItems = data.list;
+        store.updateCurrentList();
+    }
+
+    store.publishedCurrentList = function(data) {
+        store.currentList.name = data.name;
+        store.currentList.items = data.list;
+        store.currentList.savedName = data.name;
+        store.currentList.savedItems = data.list;
         store.updateCurrentList();
     }
 
@@ -437,6 +448,7 @@ function GlobalStoreContextProvider(props) {
                 type: GlobalStoreActionType.SET_CURRENT_LIST,
                 payload: store.currentList
             });
+            console.log(store.currentList)
         }
         history.push('/')
     }
