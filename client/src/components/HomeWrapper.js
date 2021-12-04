@@ -6,8 +6,8 @@ import Navigation from './Navigation';
 
 export default function HomeWrapper() {
     const { auth } = useContext(AuthContext);
-    console.log("HomeWrapper auth.loggedIn: " + auth.loggedIn);
-    console.log("HomeWrapper auth.guest: " + auth.guest);
+    // console.log("HomeWrapper auth.loggedIn: " + auth.loggedIn);
+    // console.log("HomeWrapper auth.guest: " + auth.guest);
     
     if (auth.loggedIn || auth.guest)
         return (

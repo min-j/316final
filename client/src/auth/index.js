@@ -14,7 +14,7 @@ export const AuthActionType = {
     LOGOUT: "LOGOUT",
     GUEST: "GUEST",
     SHOW_ERROR_MODAL: "SHOW_ERROR_MODAL",
-    HIDE_ERROR_MODAL: "HIDE_ERROR_MODAL"
+    HIDE_ERROR_MODAL: "HIDE_ERROR_MODAL",
 }
 
 function AuthContextProvider(props) {
@@ -129,7 +129,7 @@ function AuthContextProvider(props) {
                     }
                 })
                 history.push("/");
-                store.loadAllLists();
+                store.loadHomeLists();
             }
         } catch (e) {
             console.log(e.response.data.errorMessage);
@@ -151,7 +151,7 @@ function AuthContextProvider(props) {
                     }
                 });
                 history.push("/");
-                store.loadAllLists();
+                store.loadHomeLists();
             }
         } catch (e) {
             // console.log(e.response.data.errorMessage);

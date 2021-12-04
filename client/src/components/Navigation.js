@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -13,6 +13,7 @@ import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import FunctionsOutlinedIcon from '@mui/icons-material/FunctionsOutlined';
 import SortIcon from '@mui/icons-material/Sort';
+import { GlobalStoreContext } from '../store'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -55,7 +56,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navigation() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { store } = useContext(GlobalStoreContext);
+  const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
   const handleSortMenuOpen = (event) => {
@@ -91,6 +93,64 @@ export default function Navigation() {
     </Menu>
   );
 
+  if (store.showHome) { 
+    document.getElementById("home-button").style.border = '1px solid black';
+    document.getElementById("all-button").style.border = '';
+    document.getElementById("users-button").style.border = '';
+    document.getElementById("community-button").style.border = '';
+  }
+  if (store.showAll) { 
+    document.getElementById("home-button").style.border = '';
+    document.getElementById("all-button").style.border = '1px solid black';
+    document.getElementById("users-button").style.border = '';
+    document.getElementById("community-button").style.border = '';
+  }
+  if (store.showUsers) { 
+    document.getElementById("home-button").style.border = '';
+    document.getElementById("all-button").style.border = '';
+    document.getElementById("users-button").style.border = '1px solid black';
+    document.getElementById("community-button").style.border = '';
+  }
+  if (store.showCommunity) { 
+    document.getElementById("home-button").style.border = '';
+    document.getElementById("all-button").style.border = '';
+    document.getElementById("users-button").style.border = '';
+    document.getElementById("community-button").style.border = '1px solid black';
+  }
+
+  const handleHomeButton = () => {
+    store.loadHomeLists()
+  }
+  const handleAllButton = () => {
+    store.loadAllLists()
+  }
+  const handleUserButton = () => {
+    store.loadUserLists()
+  }
+  const handleCommunityButton = () => {
+    store.loadCommunityLists()
+  }
+
+  const handleSearch = () => {
+    let query = document.getElementById('search').value
+    if (store.showHome) {
+      if (!query) {
+        store.loadHomeLists()
+      }
+      else {
+        store.loadHomeLists(query)
+      }
+    }
+    else if (store.showAll) {
+      if (!query) {
+        store.loadAllLists()
+      }
+      else {
+        store.loadAllLists(query)
+      }
+    }
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="transparent" elevation={0}>
@@ -100,6 +160,8 @@ export default function Navigation() {
             edge="start"
             color="inherit"
             aria-label="home"
+            id="home-button"
+            onClick={(event) => handleHomeButton(event)}
           >
             <HomeOutlinedIcon />
           </IconButton>
@@ -107,6 +169,8 @@ export default function Navigation() {
             size="large"
             color="inherit"
             aria-label="all lists"
+            id="all-button"
+            onClick={(event) => handleAllButton(event)}
           >
             <GroupsOutlinedIcon />
           </IconButton>
@@ -114,6 +178,8 @@ export default function Navigation() {
             size="large"
             color="inherit"
             aria-label="users"
+            id="users-button"
+            onClick={(event) => handleUserButton(event)}
           >
             <PersonOutlinedIcon />
           </IconButton>
@@ -121,6 +187,8 @@ export default function Navigation() {
             size="large"
             color="inherit"
             aria-label="community lists"
+            id="community-button"
+            onClick={(event) => handleCommunityButton(event)}
           >
             <FunctionsOutlinedIcon />
           </IconButton>
@@ -131,6 +199,8 @@ export default function Navigation() {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              id="search"
+              onInput={handleSearch}
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />

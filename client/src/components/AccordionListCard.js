@@ -88,7 +88,7 @@ export default function AccordtionListCard(props) {
                     <Grid item xs={6}>
                         <Typography variant="caption">By: {top5list.ownerEmail}</Typography>
                     </Grid>
-                    <Grid item xs={5.5} sx={ {textAlign: 'right'} }>
+                    <Grid item xs={6} sx={ {textAlign: 'right'} }>
                         <Typography variant="caption">Views: number</Typography>
                     </Grid>
                 </Grid>

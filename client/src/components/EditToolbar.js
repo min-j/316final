@@ -1,8 +1,6 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Button from '@mui/material/Button';
-import UndoIcon from '@mui/icons-material/Undo';
-import RedoIcon from '@mui/icons-material/Redo';
 import CloseIcon from '@mui/icons-material/HighlightOff';
 
 /*

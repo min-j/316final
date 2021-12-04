@@ -13,7 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from './Copyright'
 import AuthContext from '../auth'
 import { GlobalStoreContext } from '../store'
-import { ErrorModal } from '.';
+import ErrorModal from './ErrorModal';
 
 const theme = createTheme();
 
