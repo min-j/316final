@@ -10,28 +10,50 @@ import AddIcon from '@mui/icons-material/Add';
 */
 function Statusbar() {
     const { store } = useContext(GlobalStoreContext);
-    let text ="";
 
     function handleCreateNewList() {
         store.createNewList();
     }
-    let statusbar = 
-        <div id="top5-statusbar">
-        {/* <Typography variant="h4">{text}</Typography> */}
-            <Fab 
-                aria-label="add"
-                id="add-list-button"
-                size="medium"
-                onClick={handleCreateNewList}
-            >
-                <AddIcon />
-            </Fab>
-            <Typography variant="h3">Your Lists</Typography>
-        </div>
-    // might have to be auth to check if a user is logged in instead
-    if (store.currentList)
-        // text = store.currentList.name;
-        statusbar = <div id="top5-statusbar"></div>
+    let statusbar = ""
+    if (store.showHome) {
+        statusbar = 
+            <div id="top5-statusbar">
+            {/* <Typography variant="h4">{text}</Typography> */}
+                <Fab 
+                    aria-label="add"
+                    id="add-list-button"
+                    size="medium"
+                    onClick={handleCreateNewList}
+                >
+                    <AddIcon />
+                </Fab>
+                <Typography variant="h3">Your Lists</Typography>
+            </div>
+    }
+    if (store.showAll) {
+        statusbar =
+            <div id="top5-statusbar">
+                <Typography variant="h4">Lists By Title</Typography>
+            </div>
+    }
+    else if (store.showUsers) {
+        statusbar =
+            <div id="top5-statusbar">
+                <Typography variant="h4">Lists By Username</Typography>
+            </div>
+    }
+    else if (store.showCommunity) {
+        statusbar =
+            <div id="top5-statusbar">
+                <Typography variant="h4">Community Lists</Typography>
+            </div>
+    }
+    if (store.search) {
+        statusbar = 
+            <div id="top5-statusbar">
+                <Typography variant="h4">{store.search} Lists</Typography>
+            </div>
+    }
     return (
         statusbar
     );

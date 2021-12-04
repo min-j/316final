@@ -42,6 +42,7 @@ function GlobalStoreContextProvider(props) {
         showAll: false,
         showUsers: false,
         showCommunity: false,
+        search: ""
     });
     const history = useHistory();
 
@@ -65,6 +66,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 })
             }
             // GET ALL THE ID NAME PAIRS SO WE CAN PRESENT THEM
@@ -79,6 +81,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -93,12 +96,13 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 });
             }
             case GlobalStoreActionType.LOAD_ALL_LISTS: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
-                    allLists: payload,
+                    allLists: payload.array,
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: null,
@@ -106,12 +110,13 @@ function GlobalStoreContextProvider(props) {
                     showAll: true,
                     showUsers: false,
                     showCommunity: false,
+                    search: payload.search
                 });
             }
             case GlobalStoreActionType.LOAD_USER_LISTS: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
-                    allLists: payload,
+                    allLists: payload.array,
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listMarkedForDeletion: null,
@@ -119,6 +124,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: true,
                     showCommunity: false,
+                    search: payload.search
                 });
             }
             case GlobalStoreActionType.LOAD_COMMUNITY_LISTS: {
@@ -132,6 +138,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: true,
+                    search: ""
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -146,6 +153,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -160,6 +168,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_LIST: {
@@ -173,6 +182,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 });
             }
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
@@ -186,6 +196,7 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
+                    search: ""
                 })
             }
             default:
@@ -247,43 +258,82 @@ function GlobalStoreContextProvider(props) {
         }
     }
     store.loadAllLists = async function (query) {
-        const response = await api.getAllTop5Lists({params: {name: query}});
-        if (response.data.success) {
-            let listArray = response.data.data
+        try {
+            const response = await api.getAllTop5Lists({params: {name: query}});
+            if (response.data.success) {
+                let listArray = response.data.data
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ALL_LISTS,
+                    payload: {
+                        array: listArray,
+                        search: query
+                    }
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LISTS");
+            }
+        }
+        catch (e) {
+            console.log("NO MATCHES FOUND")
             storeReducer({
                 type: GlobalStoreActionType.LOAD_ALL_LISTS,
-                payload: listArray
+                payload: {
+                    array: [],
+                    search: query
+                }
             });
-        }
-        else {
-            console.log("API FAILED TO GET THE LISTS");
         }
     }
 
-    store.loadUserLists = async function() {
-        const response = await api.getAllTop5Lists();
-        if (response.data.success) {
-            let listArray = response.data.data
+    store.loadUserLists = async function(query) {
+        try {
+            const response = await api.getAllTop5Lists({params: {userName: query} });
+            if (response.data.success) {
+                let listArray = response.data.data
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_USER_LISTS,
+                    payload: {
+                        array: listArray,
+                        search: query
+                    }
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LISTS");
+            }
+        }
+        catch (e) {
+            console.log("NO MATCHES FOUND")
             storeReducer({
                 type: GlobalStoreActionType.LOAD_USER_LISTS,
-                payload: listArray
+                payload: {
+                    array: [],
+                    search: query
+                }
             });
-        }
-        else {
-            console.log("API FAILED TO GET THE LISTS");
         }
     }
-    store.loadCommunityLists = async function() {
-        const response = await api.getAllTop5Lists();
-        if (response.data.success) {
-            let listArray = response.data.data
+    store.loadCommunityLists = async function(query) {
+        try {
+            const response = await api.getAllTop5Lists({params: {name: query}});
+            if (response.data.success) {
+                let listArray = response.data.data
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
+                    payload: []
+                });
+            }
+            else {
+                console.log("API FAILED TO GET THE LISTS");
+            }
+        }
+        catch (e) {
+            console.log("NO MATCHES FOUND")
             storeReducer({
                 type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
-                payload: listArray
+                payload: []
             });
-        }
-        else {
-            console.log("API FAILED TO GET THE LISTS");
         }
     }
 

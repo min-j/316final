@@ -120,15 +120,19 @@ export default function Navigation() {
 
   const handleHomeButton = () => {
     store.loadHomeLists()
+    document.getElementById('search').value = ""
   }
   const handleAllButton = () => {
     store.loadAllLists()
+    document.getElementById('search').value = ""
   }
   const handleUserButton = () => {
     store.loadUserLists()
+    document.getElementById('search').value = ""
   }
   const handleCommunityButton = () => {
     store.loadCommunityLists()
+    document.getElementById('search').value = ""
   }
 
   const handleSearch = () => {
@@ -149,6 +153,22 @@ export default function Navigation() {
         store.loadAllLists(query)
       }
     }
+    else if (store.showUsers) {
+      if (!query) {
+        store.loadUserLists()
+      }
+      else {
+        store.loadUserLists(query)
+      }
+    }
+    // else if (store.showCommunity) {
+    //   if (!query) {
+    //     store.loadCommunityLists()
+    //   }
+    //   else {
+    //     store.loadCommunityLists(query)
+    //   }
+    // }
   }
 
   return (
