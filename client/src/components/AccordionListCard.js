@@ -6,10 +6,9 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ListItem } from '@mui/material';
-
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-
+import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
@@ -18,7 +17,8 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import TextField from '@mui/material/TextField';
-import AuthContext from '../auth'
+import AuthContext from '../auth';
+import Comment from './Comment';
 
 export default function AccordionListCard(props) {
     const { auth } = useContext(AuthContext);
@@ -51,6 +51,13 @@ export default function AccordionListCard(props) {
         store.viewedList(id)
     }
 
+    function handleComment(event, id) {
+        if (event.key == "Enter") {
+            store.comment(id, document.getElementById('comment').value)
+            document.getElementById('comment').value = ""
+        }
+    }
+
     let editvisible = 'visible'
     if (auth.user !== null) {
         if (auth.user.userName !== top5list.userName) {
@@ -75,6 +82,21 @@ export default function AccordionListCard(props) {
     if (store.showHome) {
         title = top5list.savedName;
         items = top5list.savedItems;
+    }
+
+    let comments = ""
+    if (top5list.comments) {
+        comments = 
+            <List sx={{ width: '100%', bgcolor: 'background.paper'}}>
+            {
+                top5list.comments.map((c, index) => (
+                    <Comment 
+                        comment={c}
+                        key={index}
+                    />
+                ))
+            }
+            </List>;
     }
 
     return (
@@ -179,15 +201,16 @@ export default function AccordionListCard(props) {
                                 height: '80%',
                             }}
                         >
-                            <Box>COMMENTS</Box>
-                            <Box>SHOULD BE</Box>
-                            <Box>A COMPONENT</Box>
+                            { 
+                                comments 
+                            }
                         </Box>
                         <TextField 
-                            id="outlined-basic" 
+                            id="comment" 
                             label="Add Comment" 
                             variant="outlined"
                             fullWidth
+                            onKeyPress={(event) => {handleComment(event, top5list._id)}}
                         />
                     </Grid>
                 </Grid>

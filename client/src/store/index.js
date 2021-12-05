@@ -236,7 +236,7 @@ function GlobalStoreContextProvider(props) {
             views: 0,
             likes: [],
             dislikes: [],
-            comments: {}
+            comments: []
         };
         const response = await api.createTop5List(payload);
         if (response.data.success) {
@@ -507,18 +507,6 @@ function GlobalStoreContextProvider(props) {
         history.push("/")
     }
 
-    store.viewedList = async function(id) {
-        let response = await api.getTop5ListById(id);
-        if (response.data.success) {
-            let top5List = response.data.top5List;
-            top5List.views += 1;
-            response = await api.updateTop5ListById(id, top5List);
-            if (response.status === 200) {
-                console.log("View Count Updated")
-            }
-        }
-    }
-
     store.like = async function(id) {
         let response = await api.getTop5ListById(id);
         if (response.data.success) {
@@ -565,6 +553,31 @@ function GlobalStoreContextProvider(props) {
             response = await api.updateTop5ListById(id, top5List);
             if (response.status === 200) {
                 console.log("SUCCESS")
+            }
+            store.updateList();
+        }
+    }
+
+    store.viewedList = async function(id) {
+        let response = await api.getTop5ListById(id);
+        if (response.data.success) {
+            let top5List = response.data.top5List;
+            top5List.views += 1;
+            response = await api.updateTop5ListById(id, top5List);
+            if (response.status === 200) {
+                console.log("VIEW COUNT UPDATED")
+            }
+        }
+    }
+
+    store.comment = async function(id, comment) {
+        let response = await api.getTop5ListById(id);
+        if (response.data.success) {
+            let top5List = response.data.top5List;
+            top5List.comments.push([auth.user.userName, comment])
+            response = await api.updateTop5ListById(id, top5List);
+            if (response.status === 200) {
+                console.log("COMMENT ADDED");
             }
             store.updateList();
         }
