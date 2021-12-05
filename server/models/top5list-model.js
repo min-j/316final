@@ -9,7 +9,11 @@ const Top5ListSchema = new Schema(
         userName: { type: String, required: true },
         savedName: { type: String, required: true },
         savedItems: { type: [String], required: true },
-        publishTime: { type: Date }
+        publishTime: { type: Date },
+        views: { type: Number },
+        likes: { type: [String] },
+        dislikes: { type: [String] },
+        comments: { type: Map }
     },
     // { timestamps: true },
 )

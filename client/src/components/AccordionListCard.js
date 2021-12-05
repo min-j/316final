@@ -13,6 +13,8 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import TextField from '@mui/material/TextField';
@@ -30,9 +32,23 @@ export default function AccordionListCard(props) {
         }
     }
 
+    function handleLike(event, id) {
+        event.stopPropagation();
+        store.like(id);
+    }
+
+    function handleDislike(event, id) {
+        event.stopPropagation();
+        store.dislike(id);
+    }
+
     async function handleDeleteList(event, id) {
         event.stopPropagation();
         store.markListForDeletion(id);
+    }
+
+    function updateViewCount(event, id) {
+        store.viewedList(id)
     }
 
     let editvisible = 'visible'
@@ -43,6 +59,15 @@ export default function AccordionListCard(props) {
     }
     if (auth.guest) {
         editvisible = 'hidden'
+    }
+
+    let like = <ThumbUpOutlinedIcon />;
+    if (top5list.likes.includes(auth.user.userName)) {
+        like = <ThumbUpIcon />
+    }
+    let dislike = <ThumbDownOutlinedIcon />;
+    if (top5list.dislikes.includes(auth.user.userName)) {
+        dislike = <ThumbDownIcon />
     }
 
     let title = top5list.name;
@@ -58,7 +83,15 @@ export default function AccordionListCard(props) {
             key={top5list._id}
             sx={ {paddingTop: 0} }
         >
-        <Accordion sx={ {width:'100%'}}>
+        <Accordion 
+            sx={ {width:'100%'}} 
+            onChange={
+                (event, expanded) => {
+                    if (expanded) {
+                        updateViewCount(event, top5list._id)
+                    }
+                }}
+        >
             <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
@@ -84,17 +117,19 @@ export default function AccordionListCard(props) {
                     <Grid item xs={1}>
                         <IconButton 
                             aria-label="like"
-                            onClick={(event) => {event.stopPropagation()}}
+                            onClick={(event) => {handleLike(event, top5list._id)}}
                         >
-                            <ThumbUpOutlinedIcon />
+                            { like }
+                            {top5list.likes.length}
                         </IconButton>
                     </Grid>
                     <Grid item xs={1}>
                         <IconButton 
                             aria-label="dislike"
-                            onClick={(event) => {event.stopPropagation()}}
+                            onClick={(event) => {handleDislike(event, top5list._id)}}
                         >
-                            <ThumbDownOutlinedIcon />
+                            { dislike }
+                            {top5list.dislikes.length}
                         </IconButton>
                     </Grid>
                     <Grid item xs={1}>
@@ -109,7 +144,7 @@ export default function AccordionListCard(props) {
                         <Typography variant="caption">By: {top5list.userName}</Typography>
                     </Grid>
                     <Grid item xs={6} sx={ {textAlign: 'right'} }>
-                        <Typography variant="caption">Views: number</Typography>
+                        <Typography variant="caption">Views: {top5list.views}</Typography>
                     </Grid>
                 </Grid>
             </Box>
