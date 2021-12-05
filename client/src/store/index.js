@@ -42,7 +42,7 @@ function GlobalStoreContextProvider(props) {
         showAll: false,
         showUsers: false,
         showCommunity: false,
-        search: ""
+        search: "",
     });
     const history = useHistory();
 
@@ -217,7 +217,8 @@ function GlobalStoreContextProvider(props) {
             ownerEmail: auth.user.email,
             savedName: newListName,
             savedItems: ["?", "?", "?", "?", "?"],
-            userName: auth.user.userName
+            userName: auth.user.userName,
+            publishTime: new Date()
         };
         const response = await api.createTop5List(payload);
         if (response.data.success) {
@@ -377,6 +378,7 @@ function GlobalStoreContextProvider(props) {
 
     store.markListForDeletion = async function (id) {
         // GET THE LIST
+        console.log(id)
         let response = await api.getTop5ListById(id);
         if (response.data.success) {
             let top5List = response.data.top5List;
@@ -426,18 +428,18 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    
     store.saveList = function(data) {
         store.currentList.savedName = data.name;
         store.currentList.savedItems = data.list;
         store.updateCurrentList();
     }
 
-    store.publishedCurrentList = function(data) {
+    store.publishCurrentList = function(data) {
         store.currentList.name = data.name;
         store.currentList.items = data.list;
         store.currentList.savedName = data.name;
         store.currentList.savedItems = data.list;
+        store.currentList.publishTime = new Date();
         store.updateCurrentList();
     }
 
@@ -460,6 +462,16 @@ function GlobalStoreContextProvider(props) {
         });
         
         history.push("/");
+    }
+
+    store.sortBy = function (sortType) {
+        if (sortType === "new") {
+            store.allLists.sort((a,b) => new Date(b.publishTime) - new Date(a.publishTime));
+        }
+        else if (sortType === "old") {
+            store.allLists.sort((a,b) => new Date(a.publishTime) - new Date(b.publishTime));
+        }
+        history.push("/")
     }
 
     return (

@@ -9,9 +9,36 @@ import Navigation from './Navigation';
 
 export default function Workspace() {
     const { store } = useContext(GlobalStoreContext);
-    const [publishActive, setPublishActive] = useState(true);
+    
 
-    // console.log(store.currentList)
+    let name = store.currentList.name
+    let items = store.currentList.items;
+    if (store.currentList.items !== store.currentList.savedItems) {
+        name = store.currentList.savedName;
+        items = store.currentList.savedItems;
+    }
+
+    let listLength = (list) => {
+        let count = 0
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].length > 0) {
+                count += 1
+            }
+        }
+        return count
+    }
+
+    const [publishActive, setPublishActive] = useState(listLength(items) !== 5);
+    const handleChange = () => {
+        if (document.getElementById('item-name').value && document.getElementById('item-0').value && 
+            document.getElementById('item-1').value && document.getElementById('item-2').value && 
+            document.getElementById('item-3').value && document.getElementById('item-4').value) {
+            setPublishActive(false);
+        }
+        else {
+            setPublishActive(true);
+        }
+    }
 
     const handlePublish = (event) => {
         event.preventDefault();
@@ -23,7 +50,7 @@ export default function Workspace() {
                     document.getElementById('item-3').value,
                     document.getElementById('item-4').value]
         }
-        store.publishedCurrentList(data)
+        store.publishCurrentList(data)
     }
 
     const handleSave = (event) => {
@@ -36,24 +63,6 @@ export default function Workspace() {
                     document.getElementById('item-4').value]
         }
         store.saveList(data)
-    }
-
-    const handleChange = () => {
-        if (document.getElementById('item-name').value && document.getElementById('item-0').value && 
-            document.getElementById('item-1').value && document.getElementById('item-2').value && 
-            document.getElementById('item-3').value && document.getElementById('item-4').value) {
-            setPublishActive(false);
-        }
-        else {
-            setPublishActive(true);
-        }
-    }
-
-    let name = store.currentList.name
-    let items = store.currentList.items;
-    if (store.currentList.items !== store.currentList.savedItems) {
-        name = store.currentList.savedName;
-        items = store.currentList.savedItems;
     }
 
     return (

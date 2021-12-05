@@ -67,8 +67,15 @@ export default function Navigation() {
   };
 
   const handleMenuClose = () => {
+    // console.log("CLOSED")
     setAnchorEl(null);
   };
+
+  const handleSortby = (event, sortType) => {
+    event.stopPropagation();
+    store.sortBy(sortType);
+    handleMenuClose();
+  }
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -87,11 +94,11 @@ export default function Navigation() {
         open={isMenuOpen}
         onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Publish Date (Newest)</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Publish Date (Oldest)</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Views</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Likes</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Dislikes</MenuItem>
+      <MenuItem onClick={(event) => handleSortby(event, "new")}>Publish Date (Newest)</MenuItem>
+      <MenuItem onClick={(event) => handleSortby(event, 'old')}>Publish Date (Oldest)</MenuItem>
+      <MenuItem onClick={(event) => handleSortby(event, 'views')}>Views</MenuItem>
+      <MenuItem onClick={(event) => handleSortby(event, 'likes')}>Likes</MenuItem>
+      <MenuItem onClick={(event) => handleSortby(event, 'dislikes')}>Dislikes</MenuItem>
     </Menu>
   );
 
