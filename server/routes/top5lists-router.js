@@ -5,9 +5,10 @@ const UserController = require('../controllers/user-controller')
 const router = express.Router()
 
 router.post('/top5list', auth.verify, Top5ListController.createTop5List)
-router.put('/top5list/:id', auth.verify, Top5ListController.updateTop5List)
+// REMOVING VERIFY TO ALLOW GUEST USAGE
+router.put('/top5list/:id', Top5ListController.updateTop5List)
 router.delete('/top5list/:id', auth.verify, Top5ListController.deleteTop5List)
-router.get('/top5list/:id', auth.verify, Top5ListController.getTop5ListById)
+router.get('/top5list/:id', Top5ListController.getTop5ListById)
 // REMOVING VERIFY TO ALLOW GUEST USAGE
 router.get('/top5lists', Top5ListController.getTop5Lists)
 router.get('/top5listpairs', auth.verify, Top5ListController.getTop5ListPairs)

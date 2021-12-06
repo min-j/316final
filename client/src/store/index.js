@@ -256,10 +256,7 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.loadHomeLists = async function (query) {
-        document.getElementById("home-button").style.border = '1px solid black';
-        document.getElementById("all-button").style.border = '';
-        document.getElementById("users-button").style.border = '';
-        document.getElementById("community-button").style.border = '';
+
         try {
             const response = await api.getAllTop5Lists({params: {userName: auth.user.userName, name: query}});
             if (response.data.success) {
@@ -280,16 +277,18 @@ function GlobalStoreContextProvider(props) {
                 payload: []
             });
         }
+        finally {
+            document.getElementById("home-button").style.border = '1px solid black';
+            document.getElementById("all-button").style.border = '';
+            document.getElementById("users-button").style.border = '';
+            document.getElementById("community-button").style.border = '';
+        }
     }
     store.loadAllLists = async function (query) {
-        document.getElementById("home-button").style.border = '';
-        document.getElementById("all-button").style.border = '1px solid black';
-        document.getElementById("users-button").style.border = '';
-        document.getElementById("community-button").style.border = '';
         try {
             const response = await api.getAllTop5Lists({params: {name: query}});
             if (response.data.success) {
-                let listArray = response.data.data
+                let listArray = response.data.data.filter(lst => lst.userName !== "community")
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ALL_LISTS,
                     payload: {
@@ -312,17 +311,19 @@ function GlobalStoreContextProvider(props) {
                 }
             });
         }
+        finally {
+            document.getElementById("home-button").style.border = '';
+            document.getElementById("all-button").style.border = '1px solid black';
+            document.getElementById("users-button").style.border = '';
+            document.getElementById("community-button").style.border = '';
+        }
     }
 
     store.loadUserLists = async function(query) {
-        document.getElementById("home-button").style.border = '';
-        document.getElementById("all-button").style.border = '';
-        document.getElementById("users-button").style.border = '1px solid black';
-        document.getElementById("community-button").style.border = '';
         try {
             const response = await api.getAllTop5Lists({params: {userName: query} });
             if (response.data.success) {
-                let listArray = response.data.data
+                let listArray = response.data.data.filter(lst => lst.userName !== "community")
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_USER_LISTS,
                     payload: {
@@ -345,14 +346,16 @@ function GlobalStoreContextProvider(props) {
                 }
             });
         }
+        finally {
+            document.getElementById("home-button").style.border = '';
+            document.getElementById("all-button").style.border = '';
+            document.getElementById("users-button").style.border = '1px solid black';
+            document.getElementById("community-button").style.border = '';
+        }
     }
     store.loadCommunityLists = async function(query) {
-        document.getElementById("home-button").style.border = '';
-        document.getElementById("all-button").style.border = '';
-        document.getElementById("users-button").style.border = '';
-        document.getElementById("community-button").style.border = '1px solid black';
         try {
-            const response = await api.getAllTop5Lists();
+            const response = await api.getAllTop5Lists({params: {name: query}});
             if (response.data.success) {
                 let listArray = response.data.data
                 store.findCommunityLists(listArray)
@@ -368,25 +371,11 @@ function GlobalStoreContextProvider(props) {
                 payload: []
             });
         }
-    }
-
-    store.createNewCommunityList = async function (name) {
-        let payload = {
-            name: name,
-            items: [],
-            ownerEmail: "community",
-            savedName: name,
-            savedItems: [],
-            userName: "community",
-            publishTime: new Date(),
-            views: 0,
-            likes: [],
-            dislikes: [],
-            comments: []
-        }
-        const response = await api.createTop5List(payload);
-        if (response.data.success) {
-            console.log("COMMUNITY LIST CREATED")
+        finally {
+            document.getElementById("home-button").style.border = '';
+            document.getElementById("all-button").style.border = '';
+            document.getElementById("users-button").style.border = '';
+            document.getElementById("community-button").style.border = '1px solid black';
         }
     }
 
@@ -409,8 +398,10 @@ function GlobalStoreContextProvider(props) {
             }
         }
         let communityItems = []
-        for (let i = 0; i < 4; i++) {
+        let maxes = []
+        for (let i = 0; i < 5; i++) {
             let max = Math.max(...rankedItems.values())
+            maxes.push(max);
             for (let [key, value] of rankedItems.entries()) {
                 if (value === max) {
                     communityItems.push(key);
@@ -423,7 +414,7 @@ function GlobalStoreContextProvider(props) {
             items: communityItems,
             ownerEmail: "community",
             savedName: name,
-            savedItems: [],
+            savedItems: maxes,
             userName: "community",
             publishTime: new Date(),
             views: clist.views,
@@ -440,35 +431,67 @@ function GlobalStoreContextProvider(props) {
     store.findCommunityLists = async function(lists) {
         // THIS METHOD FIND COMMUNITY LISTS AND CREATES IF NECESSARY
         let uniqueNames = [... new Set(lists.map(lst => lst.name))].filter(name => !name.includes("Untitled")).sort()
-        let communityLists = null;
         try {
             const response = await api.getAllTop5Lists({params: {userName: 'community'}});
-            communityLists = response.data.data;
+            let communityLists = response.data.data;
             let listnames = communityLists.map(lst => lst.name).sort();
             if (uniqueNames.length > listnames.length) {
                 for (let name of uniqueNames) {
                     if (!listnames.includes(name)) {
-                        console.log("Gotta make a new list with " + name)
-                        store.createNewCommunityList(name)
+                        let payload = {
+                            name: name,
+                            items: [],
+                            ownerEmail: "community",
+                            savedName: name,
+                            savedItems: [],
+                            userName: "community",
+                            publishTime: new Date(),
+                            views: 0,
+                            likes: [],
+                            dislikes: [],
+                            comments: []
+                        }
+                        const response = await api.createTop5List(payload);
+                        if (response.data.success) {
+                            console.log("COMMUNITY LIST CREATED")
+                        }
                     }
                 }
-                response = await api.getAllTop5Lists({params: {userName: 'community'}});
-                communityLists = response.data.data;
             }
         }
         catch (e) {
             // IF NO COMMUNITY LISTS THEN CREATE THEM 
             for (let name of uniqueNames) {
-                store.createNewCommunityList(name)
+                let payload = {
+                    name: name,
+                    items: [],
+                    ownerEmail: "community",
+                    savedName: name,
+                    savedItems: [],
+                    userName: "community",
+                    publishTime: new Date(),
+                    views: 0,
+                    likes: [],
+                    dislikes: [],
+                    comments: []
+                }
+                const response = await api.createTop5List(payload);
+                if (response.data.success) {
+                    console.log("COMMUNITY LIST CREATED")
+                }
             }
         }
-        for (let clist of communityLists) {
-            store.updateCommunityList(lists, clist);
+        finally {
+            const response = await api.getAllTop5Lists({params: {userName: 'community'}});
+            let communityLists = response.data.data
+            for (let clist of communityLists) {
+                store.updateCommunityList(lists, clist);
+            }
+            storeReducer({
+                type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
+                payload: communityLists
+            });
         }
-        storeReducer({
-            type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
-            payload: communityLists
-        });
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -669,7 +692,7 @@ function GlobalStoreContextProvider(props) {
             if (response.status === 200) {
                 console.log("VIEW COUNT UPDATED")
             }
-            store.updateList();
+            // store.updateList();
         }
     }
 

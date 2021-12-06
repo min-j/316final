@@ -54,7 +54,7 @@ export default function AccordionListCard(props) {
     }
 
     function handleComment(event, id) {
-        if (event.key == "Enter") {
+        if (event.key == "Enter" && !auth.guest) {
             store.comment(id, document.getElementById("comment " + top5list._id).value)
             document.getElementById("comment " + top5list._id).value = ""
         }
@@ -71,12 +71,14 @@ export default function AccordionListCard(props) {
     }
 
     let like = <ThumbUpOutlinedIcon />;
-    if (top5list.likes.includes(auth.user.userName)) {
-        like = <ThumbUpIcon />
-    }
     let dislike = <ThumbDownOutlinedIcon />;
-    if (top5list.dislikes.includes(auth.user.userName)) {
-        dislike = <ThumbDownIcon />
+    if (!auth.guest) {
+        if (top5list.likes.includes(auth.user.userName)) {
+            like = <ThumbUpIcon />
+        }
+        if (top5list.dislikes.includes(auth.user.userName)) {
+            dislike = <ThumbDownIcon />
+        }
     }
 
     let title = top5list.name;
@@ -86,10 +88,18 @@ export default function AccordionListCard(props) {
         items = top5list.savedItems;
     }
 
-    let comments = ""
-    if (top5list.comments) {
+    // let comments = <Typography variant="h5" textAlign="center">It's a little empty here. Leave a comment!</Typography>
+    let comments = 
+        <List sx={{ width: '100%', height:'220px'}}>
+            <Comment
+            comment={["","It's a little empty here. Leave a comment!"]}
+            key={"empty"}
+            />
+        </List>;
+        
+    if (top5list.comments.length > 0) {
         comments = 
-            <List sx={{ width: '100%', bgcolor: 'background.paper'}}>
+            <List sx={{ width: '100%', height:'220px'}}>
             {
                 top5list.comments.reverse().map((c, index) => (
                     <Comment 
@@ -99,6 +109,100 @@ export default function AccordionListCard(props) {
                 ))
             }
             </List>;
+    }
+
+    let listitems = 
+        <Grid container spacing={2} sx={{height:'300px'}}>
+            <Grid item xs={1}>
+                <Typography variant="h4"> 1. </Typography>
+            </Grid>
+            <Grid item xs={11}>
+                <Typography variant="h4"> { items[0]} </Typography>
+            </Grid>
+            <Grid item xs={1}>
+                <Typography variant="h4"> 2. </Typography>
+            </Grid>
+            <Grid item xs={11}>
+                <Typography variant="h4"> { items[1]} </Typography>
+            </Grid>
+            <Grid item xs={1}>
+                <Typography variant="h4"> 3. </Typography>
+            </Grid>
+            <Grid item xs={11}>
+                <Typography variant="h4"> { items[2]} </Typography>
+            </Grid>
+            <Grid item xs={1}>
+                <Typography variant="h4"> 4. </Typography>
+            </Grid>
+            <Grid item xs={11}>
+                <Typography variant="h4"> { items[3]} </Typography>
+            </Grid>
+            <Grid item xs={1}>
+                <Typography variant="h4"> 5. </Typography>
+            </Grid>
+            <Grid item xs={11}>
+                <Typography variant="h4"> { items[4]} </Typography>
+            </Grid>
+        </Grid>;
+    if (top5list.userName === "community") {
+        comments = 
+            <List sx={{ width: '100%', height:'350px'}}>
+                <Comment
+                comment={["","It's a little empty here. Leave a comment!"]}
+                key={"empty"}
+                />
+            </List>;
+        if (top5list.comments.length > 0) {
+            comments = 
+                <List sx={{ width: '100%', height:'350px'}}>
+                {
+                    top5list.comments.reverse().map((c, index) => (
+                        <Comment 
+                            comment={c}
+                            key={index}
+                        />
+                    ))
+                }
+                </List>;
+        }
+        listitems = 
+            <Grid container spacing={2} sx={{height:'430px'}}>
+                <Grid item xs={1}>
+                    <Typography variant="h4"> 1. </Typography>
+                </Grid>
+                <Grid item xs={11}>
+                    <Typography variant="h4"> { items[0]} </Typography>
+                    <Typography variant="subtitle1">{"(" + top5list.savedItems[0] + " Points)"}</Typography>
+                </Grid>
+                <Grid item xs={1}>
+                    <Typography variant="h4"> 2. </Typography>
+                </Grid>
+                <Grid item xs={11}>
+                    <Typography variant="h4"> { items[1]} </Typography>
+                    <Typography variant="subtitle1">{"(" + top5list.savedItems[1] + " Points)"}</Typography>
+                </Grid>
+                <Grid item xs={1}>
+                    <Typography variant="h4"> 3. </Typography>
+                </Grid>
+                <Grid item xs={11}>
+                    <Typography variant="h4"> { items[2]} </Typography>
+                    <Typography variant="subtitle1">{"(" + top5list.savedItems[2] + " Points)"}</Typography>
+                </Grid>
+                <Grid item xs={1}>
+                    <Typography variant="h4"> 4. </Typography>
+                </Grid>
+                <Grid item xs={11}>
+                    <Typography variant="h4"> { items[3]} </Typography>
+                    <Typography variant="subtitle1">{"(" + top5list.savedItems[3] + " Points)"}</Typography>
+                </Grid>
+                <Grid item xs={1}>
+                    <Typography variant="h4"> 5. </Typography>
+                </Grid>
+                <Grid item xs={11}>
+                    <Typography variant="h4"> { items[4]} </Typography>
+                    <Typography variant="subtitle1">{"(" + top5list.savedItems[4] + " Points)"}</Typography>
+                </Grid>
+            </Grid>;
     }
 
     return (
@@ -124,7 +228,6 @@ export default function AccordionListCard(props) {
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={8}>
-                        {/* <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box> */}
                         <Typography sx={ {fontSize:30} }>
                             {title}
                         </Typography>
@@ -140,11 +243,19 @@ export default function AccordionListCard(props) {
                     </Grid>
                     <Grid item xs={1}>
                         <IconButton 
+                            onClick={(event) => {handleDeleteList(event, top5list._id)}}
+                            sx = { {visibility: editvisible} } 
+                            aria-label='delete'>
+                            <DeleteOutlinedIcon />
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton 
                             aria-label="like"
                             onClick={(event) => {handleLike(event, top5list._id)}}
                         >
                             { like }
-                            {top5list.likes.length}
+                            <Typography variant="inherit" sx={{marginLeft:1}}>{top5list.likes.length}</Typography>
                         </IconButton>
                     </Grid>
                     <Grid item xs={1}>
@@ -153,15 +264,7 @@ export default function AccordionListCard(props) {
                             onClick={(event) => {handleDislike(event, top5list._id)}}
                         >
                             { dislike }
-                            {top5list.dislikes.length}
-                        </IconButton>
-                    </Grid>
-                    <Grid item xs={1}>
-                        <IconButton 
-                            onClick={(event) => {handleDeleteList(event, top5list._id)}}
-                            sx = { {visibility: editvisible} } 
-                            aria-label='delete'>
-                            <DeleteOutlinedIcon />
+                            <Typography variant="inherit" sx={{marginLeft:1}}>{top5list.dislikes.length}</Typography>
                         </IconButton>
                     </Grid>
                     <Grid item xs={6}>
@@ -176,40 +279,14 @@ export default function AccordionListCard(props) {
             <AccordionDetails sx={ {bgcolor: 'lavender'} }>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <Box sx={ {border: '1px black' } }>
-                            <Grid container spacing={2}>
-                                <Grid item xs={1}>
-                                    <Typography variant="h4"> 1. </Typography>
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Typography variant="h4"> { items[0]} </Typography>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Typography variant="h4"> 2. </Typography>
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Typography variant="h4"> { items[1]} </Typography>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Typography variant="h4"> 3. </Typography>
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Typography variant="h4"> { items[2]} </Typography>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Typography variant="h4"> 4. </Typography>
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Typography variant="h4"> { items[3]} </Typography>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Typography variant="h4"> 5. </Typography>
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Typography variant="h4"> { items[4]} </Typography>
-                                </Grid>
-                            </Grid>
+                        <Box sx={ {border: 1, borderRadius: 2, p: 2, bgcolor:'#fff8cc', }}>
+                            {
+                                listitems
+                            }
                         </Box>
+                        <Grid item xs={12}>
+                            <Typography variant="caption" sx={{marginTop:5}}>Published: {top5list.publishTime.substring(0,10)}</Typography>
+                        </Grid>
                     </Grid>
                     <Grid item xs={6}>
                         <Box
@@ -217,7 +294,6 @@ export default function AccordionListCard(props) {
                                 display: 'flex', 
                                 flexDirection: 'column',
                                 overflow: 'scroll',
-                                height: '250px',
                             }}
                         >
                             { 
@@ -229,6 +305,8 @@ export default function AccordionListCard(props) {
                             label="Add Comment" 
                             variant="outlined"
                             fullWidth
+                            disabled={auth.guest}
+                            sx={{marginTop: 1, bgcolor: 'background.paper',}}
                             onKeyPress={(event) => {handleComment(event, top5list._id)}}
                         />
                     </Grid>
