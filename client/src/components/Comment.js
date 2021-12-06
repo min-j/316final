@@ -3,13 +3,11 @@ import { ListItem } from '@mui/material';
 import Card from '@mui/material/Card';
 
 export default function Comment(props) {
-    const { comment, key } = props;
+    const { comment } = props;
 
     return (
-        <ListItem
-            key={key}
-        >
-            <Typography color="text.secondary">
+        <ListItem>
+            <Typography color="text.secondary" sx={{marginRight:1}}>
                 { comment[0] + ":"}
             </Typography>
             <Typography>

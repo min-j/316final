@@ -26,6 +26,7 @@ export default function AccordionListCard(props) {
     const { top5list } = props;
 
     function handleEditList(event, id) {
+        event.stopPropagation();
         if (!event.target.disabled) {
             // CHANGE THE CURRENT LIST
             store.setCurrentList(id);
@@ -48,13 +49,14 @@ export default function AccordionListCard(props) {
     }
 
     function updateViewCount(event, id) {
+        event.stopPropagation();
         store.viewedList(id)
     }
 
     function handleComment(event, id) {
         if (event.key == "Enter") {
-            store.comment(id, document.getElementById('comment').value)
-            document.getElementById('comment').value = ""
+            store.comment(id, document.getElementById("comment " + top5list._id).value)
+            document.getElementById("comment " + top5list._id).value = ""
         }
     }
 
@@ -89,7 +91,7 @@ export default function AccordionListCard(props) {
         comments = 
             <List sx={{ width: '100%', bgcolor: 'background.paper'}}>
             {
-                top5list.comments.map((c, index) => (
+                top5list.comments.reverse().map((c, index) => (
                     <Comment 
                         comment={c}
                         key={index}
@@ -174,22 +176,39 @@ export default function AccordionListCard(props) {
             <AccordionDetails sx={ {bgcolor: 'lavender'} }>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <Box sx={ {border: '1px black', bgcolor: 'background.paper'} }>
-                            <Typography variant="h4">
-                                1. {items[0]}
-                            </Typography>
-                            <Typography variant="h4">
-                                2. {items[1]}
-                            </Typography>
-                            <Typography variant="h4">
-                                3. {items[2]}
-                            </Typography>
-                            <Typography variant="h4">
-                                4. {items[3]}
-                            </Typography>
-                            <Typography variant="h4">
-                                5. {items[4]}
-                            </Typography>
+                        <Box sx={ {border: '1px black' } }>
+                            <Grid container spacing={2}>
+                                <Grid item xs={1}>
+                                    <Typography variant="h4"> 1. </Typography>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Typography variant="h4"> { items[0]} </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography variant="h4"> 2. </Typography>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Typography variant="h4"> { items[1]} </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography variant="h4"> 3. </Typography>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Typography variant="h4"> { items[2]} </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography variant="h4"> 4. </Typography>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Typography variant="h4"> { items[3]} </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography variant="h4"> 5. </Typography>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Typography variant="h4"> { items[4]} </Typography>
+                                </Grid>
+                            </Grid>
                         </Box>
                     </Grid>
                     <Grid item xs={6}>
@@ -198,7 +217,7 @@ export default function AccordionListCard(props) {
                                 display: 'flex', 
                                 flexDirection: 'column',
                                 overflow: 'scroll',
-                                height: '80%',
+                                height: '250px',
                             }}
                         >
                             { 
@@ -206,7 +225,7 @@ export default function AccordionListCard(props) {
                             }
                         </Box>
                         <TextField 
-                            id="comment" 
+                            id= {"comment " + top5list._id}
                             label="Add Comment" 
                             variant="outlined"
                             fullWidth

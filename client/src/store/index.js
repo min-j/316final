@@ -261,8 +261,7 @@ function GlobalStoreContextProvider(props) {
         document.getElementById("users-button").style.border = '';
         document.getElementById("community-button").style.border = '';
         try {
-            const response = await api.getAllTop5Lists( 
-                {params: {userName: auth.user.userName, name: query}});
+            const response = await api.getAllTop5Lists({params: {userName: auth.user.userName, name: query}});
             if (response.data.success) {
                 let listArray = response.data.data
                 storeReducer({
@@ -353,13 +352,10 @@ function GlobalStoreContextProvider(props) {
         document.getElementById("users-button").style.border = '';
         document.getElementById("community-button").style.border = '1px solid black';
         try {
-            const response = await api.getAllTop5Lists({params: {name: query}});
+            const response = await api.getAllTop5Lists();
             if (response.data.success) {
                 let listArray = response.data.data
-                storeReducer({
-                    type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
-                    payload: []
-                });
+                store.findCommunityLists(listArray)
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -372,6 +368,107 @@ function GlobalStoreContextProvider(props) {
                 payload: []
             });
         }
+    }
+
+    store.createNewCommunityList = async function (name) {
+        let payload = {
+            name: name,
+            items: [],
+            ownerEmail: "community",
+            savedName: name,
+            savedItems: [],
+            userName: "community",
+            publishTime: new Date(),
+            views: 0,
+            likes: [],
+            dislikes: [],
+            comments: []
+        }
+        const response = await api.createTop5List(payload);
+        if (response.data.success) {
+            console.log("COMMUNITY LIST CREATED")
+        }
+    }
+
+    store.updateCommunityList = async function (lists, clist) {
+        // check if not community
+        let rankedItems = new Map();
+        let name = clist.name
+        for (let top5list of lists) {
+            if (top5list.name === name && top5list.userName !== 'community') {
+                for (let item of top5list.items) {
+                    if (!rankedItems.has(item)) {
+                        rankedItems.set(item, 0)
+                    }
+                }
+                rankedItems.set(top5list.items[0], rankedItems.get(top5list.items[0]) + 5)
+                rankedItems.set(top5list.items[1], rankedItems.get(top5list.items[1]) + 4)
+                rankedItems.set(top5list.items[2], rankedItems.get(top5list.items[2]) + 3)
+                rankedItems.set(top5list.items[3], rankedItems.get(top5list.items[3]) + 2)
+                rankedItems.set(top5list.items[4], rankedItems.get(top5list.items[4]) + 1)
+            }
+        }
+        let communityItems = []
+        for (let i = 0; i < 4; i++) {
+            let max = Math.max(...rankedItems.values())
+            for (let [key, value] of rankedItems.entries()) {
+                if (value === max) {
+                    communityItems.push(key);
+                    rankedItems.delete(key);
+                }
+            }
+        }
+        let payload = {
+            name: name,
+            items: communityItems,
+            ownerEmail: "community",
+            savedName: name,
+            savedItems: [],
+            userName: "community",
+            publishTime: new Date(),
+            views: clist.views,
+            likes: clist.likes,
+            dislikes: clist.dislikes,
+            comments: clist.comments,
+        }
+        const response = await api.updateTop5ListById(clist._id, payload);
+        if (response.status === 200) {
+            console.log("UPDATED COMMUNITY LIST!")
+        }
+    }
+    
+    store.findCommunityLists = async function(lists) {
+        // THIS METHOD FIND COMMUNITY LISTS AND CREATES IF NECESSARY
+        let uniqueNames = [... new Set(lists.map(lst => lst.name))].filter(name => !name.includes("Untitled")).sort()
+        let communityLists = null;
+        try {
+            const response = await api.getAllTop5Lists({params: {userName: 'community'}});
+            communityLists = response.data.data;
+            let listnames = communityLists.map(lst => lst.name).sort();
+            if (uniqueNames.length > listnames.length) {
+                for (let name of uniqueNames) {
+                    if (!listnames.includes(name)) {
+                        console.log("Gotta make a new list with " + name)
+                        store.createNewCommunityList(name)
+                    }
+                }
+                response = await api.getAllTop5Lists({params: {userName: 'community'}});
+                communityLists = response.data.data;
+            }
+        }
+        catch (e) {
+            // IF NO COMMUNITY LISTS THEN CREATE THEM 
+            for (let name of uniqueNames) {
+                store.createNewCommunityList(name)
+            }
+        }
+        for (let clist of communityLists) {
+            store.updateCommunityList(lists, clist);
+        }
+        storeReducer({
+            type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
+            payload: communityLists
+        });
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -504,6 +601,15 @@ function GlobalStoreContextProvider(props) {
         else if (sortType === "old") {
             store.allLists.sort((a,b) => new Date(a.publishTime) - new Date(b.publishTime));
         }
+        else if (sortType === "views") {
+            store.allLists.sort((a,b) => b.views - a.views);
+        }
+        else if (sortType === "likes") {
+            store.allLists.sort((a,b) => b.likes.length - a.likes.length);
+        }
+        else if (sortType === "dislikes") {
+            store.allLists.sort((a,b) => b.dislikes.length - a.dislikes.length);
+        }
         history.push("/")
     }
 
@@ -525,9 +631,6 @@ function GlobalStoreContextProvider(props) {
                 console.log("LIKED")
             }
             response = await api.updateTop5ListById(id, top5List);
-            if (response.status === 200) {
-                console.log("SUCCESS")
-            }
             store.updateList();
         }
     }
@@ -549,7 +652,6 @@ function GlobalStoreContextProvider(props) {
                 top5List.dislikes.push(auth.user.userName);
                 console.log("DISLIKED")
             }
-            console.log(top5List)
             response = await api.updateTop5ListById(id, top5List);
             if (response.status === 200) {
                 console.log("SUCCESS")
@@ -567,6 +669,7 @@ function GlobalStoreContextProvider(props) {
             if (response.status === 200) {
                 console.log("VIEW COUNT UPDATED")
             }
+            store.updateList();
         }
     }
 
@@ -574,7 +677,7 @@ function GlobalStoreContextProvider(props) {
         let response = await api.getTop5ListById(id);
         if (response.data.success) {
             let top5List = response.data.top5List;
-            top5List.comments.push([auth.user.userName, comment])
+            top5List.comments.unshift([auth.user.userName, comment])
             response = await api.updateTop5ListById(id, top5List);
             if (response.status === 200) {
                 console.log("COMMENT ADDED");
