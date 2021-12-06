@@ -73,7 +73,7 @@ export default function Navigation() {
 
   const handleSortby = (event, sortType) => {
     event.stopPropagation();
-    store.sortBy(sortType);
+    store.sortBy(sortType, store.allLists);
     handleMenuClose();
   }
 
@@ -145,14 +145,14 @@ export default function Navigation() {
         store.loadUserLists(query)
       }
     }
-    // else if (store.showCommunity) {
-    //   if (!query) {
-    //     store.loadCommunityLists()
-    //   }
-    //   else {
-    //     store.loadCommunityLists(query)
-    //   }
-    // }
+    else if (store.showCommunity) {
+      if (!query) {
+        store.loadCommunityLists()
+      }
+      else {
+        store.loadCommunityLists(query)
+      }
+    }
   }
   
   let buttondisabled = false

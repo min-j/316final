@@ -91,17 +91,17 @@ registerUser = async (req, res) => {
 
 loginUser = async (req,res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
+        const { userName, password } = req.body;
+        if (!userName || !password) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
         }
-        const existingUser = await User.findOne({ email: email });
+        const existingUser = await User.findOne({ userName: userName });
         if (!existingUser) {
             return res
                 .status(400)
-                .json({ errorMessage: "An account with this email does not exist." });
+                .json({ errorMessage: "An account with this username does not exist." });
         }
         const passwordCorrect = await bcrypt.compare(password, existingUser.passwordHash);
         if (!passwordCorrect) {

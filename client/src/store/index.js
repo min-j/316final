@@ -43,6 +43,7 @@ function GlobalStoreContextProvider(props) {
         showUsers: false,
         showCommunity: false,
         search: "",
+        sortType:  "",
     });
     const history = useHistory();
 
@@ -66,7 +67,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
-                    search: ""
+                    search: "",
+                    sortType:  "",
                 })
             }
             // GET ALL THE ID NAME PAIRS SO WE CAN PRESENT THEM
@@ -81,7 +83,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
-                    search: ""
+                    search: "",
+                    sortType:  "",
                 });
             }
             case GlobalStoreActionType.UPDATE_LIST: {
@@ -95,7 +98,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: store.showAll,
                     showUsers: store.showUsers,
                     showCommunity: store.showCommunity,
-                    search: ""
+                    search: "",
+                    sortType: store.sortType,
                 });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -110,7 +114,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: false,
-                    search: ""
+                    search: "",
+                    sortType: store.sortType,
                 });
             }
             case GlobalStoreActionType.LOAD_ALL_LISTS: {
@@ -124,7 +129,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: true,
                     showUsers: false,
                     showCommunity: false,
-                    search: payload.search
+                    search: payload.search,
+                    sortType: store.sortType,
                 });
             }
             case GlobalStoreActionType.LOAD_USER_LISTS: {
@@ -138,7 +144,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: true,
                     showCommunity: false,
-                    search: payload.search
+                    search: payload.search,
+                    sortType: store.sortType,
                 });
             }
             case GlobalStoreActionType.LOAD_COMMUNITY_LISTS: {
@@ -152,7 +159,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: false,
                     showUsers: false,
                     showCommunity: true,
-                    search: ""
+                    search: "",
+                    sortType: store.sortType,
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -167,7 +175,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: store.showAll,
                     showUsers: store.showUsers,
                     showCommunity: store.showCommunity,
-                    search: ""
+                    search: "",
+                    sortType: "",
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -182,7 +191,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: store.showAll,
                     showUsers: store.showUsers,
                     showCommunity: store.showCommunity,
-                    search: ""
+                    search: "",
+                    sortType: "",
                 });
             }
             case GlobalStoreActionType.SET_CURRENT_LIST: {
@@ -196,7 +206,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: store.showAll,
                     showUsers: store.showUsers,
                     showCommunity: store.showCommunity,
-                    search: ""
+                    search: "",
+                    sortType: "",
                 });
             }
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
@@ -210,7 +221,8 @@ function GlobalStoreContextProvider(props) {
                     showAll: store.showAll,
                     showUsers: store.showUsers,
                     showCommunity: store.showCommunity,
-                    search: ""
+                    search: "",
+                    sortType: "",
                 })
             }
             default:
@@ -256,11 +268,14 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.loadHomeLists = async function (query) {
-
         try {
-            const response = await api.getAllTop5Lists({params: {userName: auth.user.userName, name: query}});
+            const response = await api.getAllTop5Lists({params: {userName: auth.user.userName}});
             if (response.data.success) {
                 let listArray = response.data.data
+                if (query) {
+                    listArray = listArray.filter(list => list.savedName.toLowerCase().startsWith(query.toLowerCase()))
+                }
+                store.sortBy(store.sortType, listArray)
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_HOME_LISTS,
                     payload: listArray
@@ -286,9 +301,13 @@ function GlobalStoreContextProvider(props) {
     }
     store.loadAllLists = async function (query) {
         try {
-            const response = await api.getAllTop5Lists({params: {name: query}});
+            const response = await api.getAllTop5Lists();
             if (response.data.success) {
                 let listArray = response.data.data.filter(lst => lst.userName !== "community")
+                if (query) {
+                    listArray = listArray.filter(list => list.name.toLowerCase() === query.toLowerCase())
+                }
+                store.sortBy(store.sortType, listArray)
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ALL_LISTS,
                     payload: {
@@ -321,9 +340,13 @@ function GlobalStoreContextProvider(props) {
 
     store.loadUserLists = async function(query) {
         try {
-            const response = await api.getAllTop5Lists({params: {userName: query} });
+            const response = await api.getAllTop5Lists();
             if (response.data.success) {
                 let listArray = response.data.data.filter(lst => lst.userName !== "community")
+                if (query) {
+                    listArray = listArray.filter(list => list.userName.toLowerCase() === query.toLowerCase())
+                }
+                store.sortBy(store.sortType, listArray)
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_USER_LISTS,
                     payload: {
@@ -355,10 +378,10 @@ function GlobalStoreContextProvider(props) {
     }
     store.loadCommunityLists = async function(query) {
         try {
-            const response = await api.getAllTop5Lists({params: {name: query}});
+            const response = await api.getAllTop5Lists();
             if (response.data.success) {
                 let listArray = response.data.data
-                store.findCommunityLists(listArray)
+                store.findCommunityLists(listArray, query)
             }
             else {
                 console.log("API FAILED TO GET THE LISTS");
@@ -406,6 +429,7 @@ function GlobalStoreContextProvider(props) {
                 if (value === max) {
                     communityItems.push(key);
                     rankedItems.delete(key);
+                    break
                 }
             }
         }
@@ -428,7 +452,7 @@ function GlobalStoreContextProvider(props) {
         }
     }
     
-    store.findCommunityLists = async function(lists) {
+    store.findCommunityLists = async function(lists, query) {
         // THIS METHOD FIND COMMUNITY LISTS AND CREATES IF NECESSARY
         let uniqueNames = [... new Set(lists.map(lst => lst.name))].filter(name => !name.includes("Untitled")).sort()
         try {
@@ -487,6 +511,10 @@ function GlobalStoreContextProvider(props) {
             for (let clist of communityLists) {
                 store.updateCommunityList(lists, clist);
             }
+            if (query) {
+                communityLists = communityLists.filter(list => list.name.toLowerCase() === query.toLowerCase())
+            }
+            store.sortBy(store.sortType, communityLists)
             storeReducer({
                 type: GlobalStoreActionType.LOAD_COMMUNITY_LISTS,
                 payload: communityLists
@@ -617,21 +645,22 @@ function GlobalStoreContextProvider(props) {
         history.push("/");
     }
 
-    store.sortBy = function (sortType) {
+    store.sortBy = function (sortType, lst) {
+        store.sortType = sortType;
         if (sortType === "new") {
-            store.allLists.sort((a,b) => new Date(b.publishTime) - new Date(a.publishTime));
+            lst.sort((a,b) => new Date(b.publishTime) - new Date(a.publishTime));
         }
         else if (sortType === "old") {
-            store.allLists.sort((a,b) => new Date(a.publishTime) - new Date(b.publishTime));
+            lst.sort((a,b) => new Date(a.publishTime) - new Date(b.publishTime));
         }
         else if (sortType === "views") {
-            store.allLists.sort((a,b) => b.views - a.views);
+            lst.sort((a,b) => b.views - a.views);
         }
         else if (sortType === "likes") {
-            store.allLists.sort((a,b) => b.likes.length - a.likes.length);
+            lst.sort((a,b) => b.likes.length - a.likes.length);
         }
         else if (sortType === "dislikes") {
-            store.allLists.sort((a,b) => b.dislikes.length - a.dislikes.length);
+            lst.sort((a,b) => b.dislikes.length - a.dislikes.length);
         }
         history.push("/")
     }
@@ -692,7 +721,7 @@ function GlobalStoreContextProvider(props) {
             if (response.status === 200) {
                 console.log("VIEW COUNT UPDATED")
             }
-            // store.updateList();
+            store.updateList();
         }
     }
 
